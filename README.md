@@ -13,6 +13,15 @@ Check [Virtualbox](https://www.virtualbox.org/wiki/Downloads) for information on
 ## Install Vagrant
 Check [VagrantUp](http://www.vagrantup.com/downloads) for information on installing vagrant.
 
+## Fire up the VM
+```
+git clone https://github.com/thebarbershopper/epictreasure
+cd epictreasure
+vagrant up
+... Go grab a coffee while we install all the things
+vagrant ssh
+```
+
 ## Check correct installation
 
 ### Pwndbg
