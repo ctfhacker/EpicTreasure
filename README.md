@@ -1,4 +1,4 @@
-# Vagrant CTF Box
+# EpicTreasure - Batteries included CTF Vagrant box
 
 ## Tools included
 * [Binjitsu](https://github.com/binjitsu/binjitsu)
