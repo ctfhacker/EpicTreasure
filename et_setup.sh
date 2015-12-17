@@ -97,6 +97,24 @@ virtualenv angr
 source angr/bin/activate
 pip install angr --upgrade
 
+# Install american-fuzzy-lop
+sudo apt-get -y install clang llvm
+
+cd ~/tools
+wget --quiet http://lcamtuf.coredump.cx/afl/releases/afl-latest.tgz
+tar -xzvf afl-latest.tgz
+rm afl-latest.tgz
+(
+  cd afl-*
+  make
+  # build clang-fast
+  (
+    cd llvm_mode
+    make
+  )
+  sudo make install
+)
+
 # Install 32 bit libs
 sudo dpkg --add-architecture i386
 sudo apt-get update
