@@ -63,6 +63,7 @@ cd
 git clone https://github.com/devttys0/binwalk
 cd binwalk
 sudo python setup.py install
+sudo apt-get install squashfs-tools
 
 # Install Firmware-Mod-Kit
 sudo apt-get -y install git build-essential zlib1g-dev liblzma-dev python-magic
