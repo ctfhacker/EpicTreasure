@@ -5,7 +5,7 @@
 * [Pwndbg](https://github.com/zachriggle/pwndbg)
 * [Radare2](https://github.com/radare/radare2)
 * [Firmware tools (fmk / qemu)](http://reverseengineering.stackexchange.com/questions/8829/cross-debugging-for-mips-elf-with-qemu-toolchain)
-* [Angr](https://github.com/angr/angr)
+* [angr](https://github.com/angr/angr)
 
 ## Install VirtualBox
 Check [Virtualbox](https://www.virtualbox.org/wiki/Downloads) for information on installing Virtualbox on your respective operating system.
@@ -69,7 +69,7 @@ python
 [*] Loading gadgets for '/bin/ls'
 ```
 
-### Angr
+### angr
 
 Run the following commands in the VM:
 ```
