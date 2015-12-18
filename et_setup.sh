@@ -120,3 +120,27 @@ rm afl-latest.tgz
 sudo dpkg --add-architecture i386
 sudo apt-get update
 sudo apt-get -y install libc6:i386 libncurses5:i386 libstdc++6:i386
+
+# Install apktool - from https://github.com/zardus/ctf-tools
+apt-get update
+apt-get install -y default-jre
+wget https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool
+wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.0.2.jar
+mv apktool_2.0.2.jar /bin/apktool.jar
+mv apktool /bin/
+chmod 755 /bin/apktool
+chmod 755 /bin/apktool.jar
+
+# Install preeny
+git clone --depth 1 https://github.com/zardus/preeny
+PATH=$PWD/../crosstool/bin:$PATH
+
+cd preeny
+for i in ../../crosstool/bin/*-gcc
+do
+    t=$(basename $i)
+    CC=$t make -j $(nproc) -i
+done
+PLATFORM=-m32 setarch i686 make -i
+mv x86_64-linux-gnu i686-linux-gnu
+make -i
