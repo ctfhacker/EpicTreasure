@@ -93,10 +93,10 @@ cd dotfiles
 # Install Angr
 cd /home/vagrant
 sudo apt-get -y install python-dev libffi-dev build-essential virtualenvwrapper
-sudo pip install virtualenv
-virtualenv angr
-source angr/bin/activate
-pip install angr --upgrade
+# sudo pip install virtualenv
+# virtualenv angr
+# source angr/bin/activate
+sudo pip install angr --upgrade
 
 # Install american-fuzzy-lop
 sudo apt-get -y install clang llvm
@@ -120,6 +120,7 @@ rm afl-latest.tgz
 sudo dpkg --add-architecture i386
 sudo apt-get update
 sudo apt-get -y install libc6:i386 libncurses5:i386 libstdc++6:i386
+sudo apt-get install libc6-dev-i386
 
 # Install apktool - from https://github.com/zardus/ctf-tools
 apt-get update
