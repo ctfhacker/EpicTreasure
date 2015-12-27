@@ -120,7 +120,7 @@ rm afl-latest.tgz
 sudo dpkg --add-architecture i386
 sudo apt-get update
 sudo apt-get -y install libc6:i386 libncurses5:i386 libstdc++6:i386
-sudo apt-get install libc6-dev-i386
+sudo apt-get -y install libc6-dev-i386
 
 # Install apktool - from https://github.com/zardus/ctf-tools
 apt-get update
@@ -145,3 +145,8 @@ done
 PLATFORM=-m32 setarch i686 make -i
 mv x86_64-linux-gnu i686-linux-gnu
 make -i
+
+# Install Pillow
+sudo apt-get build-dep python-imaging
+sudo apt-get install libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev
+sudo pip install Pillow
