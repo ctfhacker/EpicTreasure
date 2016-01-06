@@ -6,6 +6,7 @@
 * [Radare2](https://github.com/radare/radare2)
 * [Firmware tools (fmk / qemu)](http://reverseengineering.stackexchange.com/questions/8829/cross-debugging-for-mips-elf-with-qemu-toolchain)
 * [angr](https://github.com/angr/angr)
+* [ROPGadget](https://github.com/JonathanSalwan/ROPgadget)
 
 ## Install VirtualBox
 Check [Virtualbox](https://www.virtualbox.org/wiki/Downloads) for information on installing Virtualbox on your respective operating system.

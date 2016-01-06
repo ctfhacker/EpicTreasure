@@ -153,3 +153,13 @@ sudo pip install Pillow
 
 # Install r2pipe
 sudo pip install r2pipe
+
+# Install angr-dev
+cd ~/tools
+git clone https://github.com/angr/angr-dev
+cd angr-dev
+
+# Install ROPGadget
+git clone https://github.com/JonathanSalwan/ROPgadget
+cd ROPgadget
+sudo python setup.py install
