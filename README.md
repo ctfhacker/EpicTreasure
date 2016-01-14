@@ -23,6 +23,36 @@ vagrant up
 vagrant ssh
 ```
 
+## Default settings
+By default, [my dotfiles](http://github.com/thebarbershopper/dotfiles) are installed onto the VM. Simply comment out the following lines in et_setup.sh if you don't want my settings.
+
+```
+# Personal config
+sudo sudo apt-get -y install stow
+cd /home/vagrant
+rm .bashrc
+git clone https://github.com/thebarbershopper/dotfiles
+cd dotfiles
+./install.sh
+```
+
+#### Terminal
+* Colorscheme for the terminal and vim is [solarized](https://github.com/altercation/solarized)
+
+#### Vim
+* `jk` or `jj` to `ESC` out of Vim 
+* `ESC` and `Arrow keys` are hard coded to not work in Vim (as a teaching mechanism)
+* `:` is remapped to `;` (who uses ; anyway?)
+* leader key is `SPACE` (thanks to [spacemacs](https://github.com/syl20bnr/spacemacs))
+* `SPACE p` will drop an embedded IPython line in a python script
+* `H` moves to beginning of line, `L` moves to end of line (instead of `^` and `$`)
+
+#### Tmux
+* A new shell spawns a fresh `tmux` session
+* `tmux` leader switched to `Ctrl+A`
+* `Ctrl+A -` produces a horizontal pane. `Ctrl+A \` produces a vertical pane.
+* `Ctrl+A [hjkl]` moves around available panes as vim motion
+
 ## Check correct installation
 
 ### Pwndbg
