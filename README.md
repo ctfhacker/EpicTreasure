@@ -16,7 +16,7 @@ Check [VagrantUp](http://www.vagrantup.com/downloads) for information on install
 
 ## Fire up the VM
 ```
-git clone https://github.com/thebarbershopper/epictreasure
+git clone https://github.com/ctfhacker/epictreasure
 cd epictreasure
 vagrant up
 ... Go grab a coffee while we install all the things
@@ -24,7 +24,7 @@ vagrant ssh
 ```
 
 ## Default settings
-By default, [my dotfiles](http://github.com/thebarbershopper/dotfiles) are installed onto the VM. Simply comment out the following lines in et_setup.sh if you don't want my settings.
+By default, [my dotfiles](http://github.com/ctfhacker/dotfiles) are installed onto the VM. Simply comment out the following lines in et_setup.sh if you don't want my settings.
 
 ```
 # Personal config
