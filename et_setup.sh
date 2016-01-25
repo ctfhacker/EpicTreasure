@@ -87,20 +87,14 @@ sudo sudo apt-get -y install stow
 cd /home/vagrant
 rm .bashrc
 git clone https://github.com/thebarbershopper/dotfiles
-cd dotfiles
-./install.sh
 
 # Install Angr
 cd /home/vagrant
 sudo apt-get -y install python-dev libffi-dev build-essential virtualenvwrapper
-# sudo pip install virtualenv
-# virtualenv angr
-# source angr/bin/activate
 sudo pip install angr --upgrade
 
 # Install american-fuzzy-lop
 sudo apt-get -y install clang llvm
-
 cd ~/tools
 wget --quiet http://lcamtuf.coredump.cx/afl/releases/afl-latest.tgz
 tar -xzvf afl-latest.tgz

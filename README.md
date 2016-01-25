@@ -16,7 +16,7 @@ Check [VagrantUp](http://www.vagrantup.com/downloads) for information on install
 
 ## Fire up the VM
 ```
-git clone https://github.com/thebarbershopper/epictreasure
+git clone https://github.com/praetorian-inc/epictreasure
 cd epictreasure
 vagrant up
 ... Go grab a coffee while we install all the things
