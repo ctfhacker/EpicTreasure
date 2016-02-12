@@ -21,7 +21,7 @@
 Check [Virtualbox](https://www.virtualbox.org/wiki/Downloads) for information on installing Virtualbox on your respective operating system.
 
 ## Install Vagrant
-Check [VagrantUp](http://www.vagrantup.com/downloads) for information on installing vagrant.
+Check [VagrantUp](https://www.vagrantup.com/downloads.html) for information on installing vagrant.
 
 ## Fire up the VM
 ```
