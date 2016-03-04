@@ -139,7 +139,7 @@ sudo python setup.py install
 
 # Personal config
 sudo sudo apt-get -y install stow
-cd /home/vagrant
+cd $HOMEDIR
 rm .bashrc
 git clone https://github.com/ctfhacker/dotfiles
 cd dotfiles
