@@ -18,6 +18,7 @@ Check [VagrantUp](https://www.vagrantup.com/downloads.html) for information on i
 ```
 git clone https://github.com/ctfhacker/epictreasure
 cd epictreasure
+mkdir host-share
 vagrant up
 ... Go grab a coffee while we install all the things
 vagrant ssh
