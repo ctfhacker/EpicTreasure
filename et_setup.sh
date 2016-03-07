@@ -144,3 +144,10 @@ rm .bashrc
 git clone https://github.com/ctfhacker/dotfiles
 cd dotfiles
 ./install.sh
+
+# Install libheap in GDB
+cd $HOMEDIR/tools
+git clone https://github.com/cloudburst/libheap
+cd libheap
+cp libheap.py /usr/lib/python3.4
+echo python from libheap import * >> ~/.gdbinit
