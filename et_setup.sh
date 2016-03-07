@@ -149,5 +149,5 @@ cd dotfiles
 cd $HOMEDIR/tools
 git clone https://github.com/cloudburst/libheap
 cd libheap
-cp libheap.py /usr/lib/python3.4
+sudo cp libheap.py /usr/lib/python3.4
 echo python from libheap import * >> ~/.gdbinit
