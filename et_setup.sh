@@ -36,6 +36,7 @@ sudo apt-get update
 # Install Binjitsu
 sudo apt-get -y install python2.7 python-pip python-dev git
 sudo pip install --upgrade git+https://github.com/binjitsu/binjitsu.git
+echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
 
 cd $HOMEDIR
 mkdir tools
@@ -119,10 +120,10 @@ apt-get update
 apt-get install -y default-jre
 wget https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool
 wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.0.2.jar
-mv apktool_2.0.2.jar /bin/apktool.jar
-mv apktool /bin/
-chmod 755 /bin/apktool
-chmod 755 /bin/apktool.jar
+sudo mv apktool_2.0.2.jar /bin/apktool.jar
+sudo mv apktool /bin/
+sudo chmod 755 /bin/apktool
+sudo chmod 755 /bin/apktool.jar
 
 # Install Pillow
 sudo apt-get build-dep python-imaging
@@ -150,4 +151,4 @@ cd $HOMEDIR/tools
 git clone https://github.com/cloudburst/libheap
 cd libheap
 sudo cp libheap.py /usr/lib/python3.4
-echo python from libheap import * >> ~/.gdbinit
+echo "python from libheap import *" >> ~/.gdbinit
