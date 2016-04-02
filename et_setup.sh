@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HOMEDIR=/home/vagrant
+HOMEDIR=/home/ctf
 
 # Updates
 sudo apt-get -y update
@@ -50,6 +50,15 @@ echo source `pwd`/pwndbg/gdbinit.py >> ~/.gdbinit
 git clone https://github.com/aquynh/capstone
 cd capstone
 git checkout -t origin/next
+sudo ./make.sh install
+cd bindings/python
+sudo python3 setup.py install # Ubuntu 14.04+, GDB uses Python3
+
+# Unicorn for pwndbg
+cd $HOMEDIR/tools
+sudo apt-get install libglib2.0-dev
+git clone https://github.com/unicorn-engine/unicorn
+cd unicorn
 sudo ./make.sh install
 cd bindings/python
 sudo python3 setup.py install # Ubuntu 14.04+, GDB uses Python3
@@ -107,6 +116,10 @@ rm afl-latest.tgz
     make
   )
   sudo make install
+
+  # build qemu-support
+  sudo apt-get -y install libtool automake bison libglib2.0-dev
+  ./build_qemu_support.sh
 )
 
 # Install 32 bit libs
