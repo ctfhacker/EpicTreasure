@@ -107,6 +107,13 @@ cd $HOMEDIR/tools
 wget --quiet http://lcamtuf.coredump.cx/afl/releases/afl-latest.tgz
 tar -xzvf afl-latest.tgz
 rm afl-latest.tgz
+wget --quiet http://llvm.org/releases/3.8.0/clang+llvm-3.8.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz
+xz -d clang*
+tar xvf clang*
+cd clang*
+cd bin
+export PATH=$PWD:$PATH
+cd ../..
 (
   cd afl-*
   make
