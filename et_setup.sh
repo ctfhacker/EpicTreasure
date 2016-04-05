@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HOMEDIR=/home/ctf
+HOMEDIR=/home/vagrant
 
 # Updates
 sudo apt-get -y update
@@ -11,6 +11,7 @@ sudo apt-get -y install gdb gdb-multiarch
 sudo apt-get -y install unzip
 sudo apt-get -y install foremost
 sudo apt-get -y install ipython
+sudo apt-get -y install silversearcher-ag
 
 """
 # QEMU with MIPS/ARM - http://reverseengineering.stackexchange.com/questions/8829/cross-debugging-for-mips-elf-with-qemu-toolchain
