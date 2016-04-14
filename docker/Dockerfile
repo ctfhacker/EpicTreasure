@@ -170,7 +170,7 @@ RUN cd /root/tools \
 RUN apt-get -y install stow \
     && cd /root \
     && rm .bashrc \
-    && git clone https://github.com/ctfhacker/dotfiles \
+    && git clone --recursive https://github.com/ctfhacker/dotfiles \
     && cd dotfiles \
     && ./install.sh
 
