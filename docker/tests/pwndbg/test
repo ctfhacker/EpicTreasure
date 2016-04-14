@@ -2,12 +2,20 @@
 from pwn import *
 
 r = process('gdb')
+r.send('heap -h\n')
 output = r.recvall(timeout=0.5)
 print(output)
 
+# Check for pwndbg
 if 'error' in output.lower():
     sys.exit(255)
 elif 'pwndbg>' in output:
+    pass
+else:
+    sys.exit(255)
+
+# Check for libheap
+if 'Heap Dump Help' in output:
     sys.exit(0)
 else:
     sys.exit(255)
