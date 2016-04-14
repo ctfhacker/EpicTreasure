@@ -3,7 +3,7 @@ from pwn import *
 
 r = process('gdb')
 r.send('heap -h\n')
-output = r.recvall(timeout=0.5)
+output = r.recvall(timeout=1)
 print(output)
 
 # Check for pwndbg
