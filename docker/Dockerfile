@@ -28,6 +28,7 @@ RUN apt-get install -y \
     python2.7 \
     python3-pip \
     tmux \
+    tree \
     virtualenvwrapper \
     wget \
     vim
@@ -39,9 +40,12 @@ RUN git clone https://github.com/radare/radare2 \
 RUN pip install angr --upgrade
 
 RUN pip install --upgrade ipython
-RUN useradd -m epictreasure
-RUN usermod -U epictreasure
-RUN mkdir /home/epictreasure/tools
+# RUN useradd -m epictreasure
+# RUN usermod -U epictreasure
+# USER epictreasure
+# RUN chsh -s /bin/bash epictreasure
+# RUN mkdir /home/epictreasure/tools
+RUN mkdir /root/tools
 
 RUN apt-get -y install python2.7 python-pip python-dev git \ 
     && pip install --upgrade git+https://github.com/binjitsu/binjitsu.git
@@ -58,11 +62,12 @@ RUN pip3 install --upgrade pycparser
 
 RUN pip install --upgrade git+https://github.com/binjitsu/binjitsu.git # 2016-2-15
 
-RUN git clone https://github.com/zachriggle/pwndbg /home/epictreasure/tools/pwndbg
-RUN echo "source /home/epictreasure/tools/pwndbg/gdbinit.py" > /home/epictreasure/.gdbinit
+RUN git clone https://github.com/zachriggle/pwndbg /root/tools/pwndbg
+RUN echo "source /root/tools/pwndbg/gdbinit.py" > /root/.gdbinit
+RUN pip3 install -Ur /root/tools/pwndbg/requirements.txt
 
 RUN apt-get install -y libglib2.0-dev \ 
-    && cd /home/epictreasure/tools \ 
+    && cd /root/tools \ 
     && git clone https://github.com/unicorn-engine/unicorn \ 
     && cd unicorn \ 
     && ./make.sh install \ 
@@ -88,14 +93,14 @@ RUN ln -s /usr/arm-linux-gnueabihf /etc/qemu-binfmt/arm
 RUN rm /etc/apt/sources.list.d/emdebian.list
 RUN sudo apt-get update
 
-RUN cd /home/epictreasure/tools \
+RUN cd /root/tools \
     && git clone https://github.com/devttys0/binwalk \
     && cd binwalk \ 
     && python setup.py install \ 
     && apt-get -y install squashfs-tools
 
 RUN apt-get -y install git build-essential zlib1g-dev liblzma-dev python-magic \ 
-    && cd /home/epictreasure/tools \ 
+    && cd /root/tools \ 
     && wget https://firmware-mod-kit.googlecode.com/files/fmk_099.tar.gz \ 
     && tar zxvf fmk_099.tar.gz \ 
     && rm fmk_099.tar.gz \
@@ -105,7 +110,7 @@ RUN apt-get -y install git build-essential zlib1g-dev liblzma-dev python-magic \
 
 # Install AFL with QEMU and clang-fast
 RUN apt-get -y install clang llvm
-RUN cd /home/epictreasure/tools \
+RUN cd /root/tools \
     && wget --quiet http://lcamtuf.coredump.cx/afl/releases/afl-latest.tgz \
     && tar -xzvf afl-latest.tgz \
     && rm afl-latest.tgz \
@@ -151,35 +156,34 @@ RUN apt-get -y build-dep python-imaging \
 RUN pip install r2pipe
 
 # Install ROPGadget
-RUN cd /home/epictreasure/tools \
+RUN cd /root/tools \
     && git clone https://github.com/JonathanSalwan/ROPgadget \
     && cd ROPgadget \
     && python setup.py install
 
 # Install personal config
 RUN apt-get -y install stow \
-    && cd /home/epictreasure \
+    && cd /root \
     && rm .bashrc \
     && git clone https://github.com/ctfhacker/dotfiles \
     && cd dotfiles \
     && ./install.sh
 
 # Install fzf for fuzzing searching on command line
-RUN cd /home/epictreasure/tools \
-    && git clone --depth 1 https://github.com/junegunn/fzf.git /home/epictreasure/.fzf \
-    && /home/epictreasure/.fzf/install --all --key-bindings --completion
+RUN cd /root/tools \
+    && git clone --depth 1 https://github.com/junegunn/fzf.git /root/.fzf \
+    && /root/.fzf/install --all --key-bindings --completion
 
 # Install libheap in GDB
-RUN cd /home/epictreasure/tools \
+RUN cd /root/tools \
     && git clone https://github.com/cloudburst/libheap \
     && cd libheap \
     && cp libheap.py /usr/lib/python3.4 \
-    && echo "python from libheap import *" >> /home/epictreasure/.gdbinit
+    && echo "python from libheap import *" >> /root/.gdbinit
 
 RUN locale-gen en_US.UTF-8  
 ENV LANG en_US.UTF-8  
 ENV LANGUAGE en_US:en  
 ENV LC_ALL en_US.UTF-8     
 
-RUN chown -R epictreasure.epictreasure /home/epictreasure
-RUN chsh -s /bin/bash epictreasure
+# RUN chown -R epictreasure.epictreasure /root
