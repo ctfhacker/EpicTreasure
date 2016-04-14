@@ -1,0 +1,2 @@
+#!/bin/sh
+PWNLIB_NOTERM=1 python -c 'from pwn import *'

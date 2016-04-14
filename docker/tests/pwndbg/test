@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+from pwn import *
+
+r = process('gdb')
+output = r.recvall(timeout=0.5)
+print(output)
+
+if 'error' in output.lower():
+    sys.exit(255)
+elif 'pwndbg>' in output:
+    sys.exit(0)
+else:
+    sys.exit(255)
