@@ -33,10 +33,12 @@ RUN apt-get install -y \
     wget \
     vim
 
+# Install radare2
 RUN git clone https://github.com/radare/radare2 \
     && cd radare2 \
     && ./sys/install.sh
 
+# Install angr
 RUN pip install angr --upgrade
 
 RUN pip install --upgrade ipython
@@ -47,6 +49,7 @@ RUN pip install --upgrade ipython
 # RUN mkdir /home/epictreasure/tools
 RUN mkdir /root/tools
 
+# Install binjitsu
 RUN apt-get -y install python2.7 python-pip python-dev git \ 
     && pip install --upgrade git+https://github.com/binjitsu/binjitsu.git
 
@@ -93,12 +96,14 @@ RUN ln -s /usr/arm-linux-gnueabihf /etc/qemu-binfmt/arm
 RUN rm /etc/apt/sources.list.d/emdebian.list
 RUN sudo apt-get update
 
+# Install binwalk
 RUN cd /root/tools \
     && git clone https://github.com/devttys0/binwalk \
     && cd binwalk \ 
     && python setup.py install \ 
     && apt-get -y install squashfs-tools
 
+# Install firmware-mod-kit
 RUN apt-get -y install git build-essential zlib1g-dev liblzma-dev python-magic \ 
     && cd /root/tools \ 
     && wget https://firmware-mod-kit.googlecode.com/files/fmk_099.tar.gz \ 
@@ -180,6 +185,8 @@ RUN cd /root/tools \
     && cd libheap \
     && cp libheap.py /usr/lib/python3.4 \
     && echo "python from libheap import *" >> /root/.gdbinit
+
+RUN apt-get install silversearcher-ag
 
 RUN locale-gen en_US.UTF-8  
 ENV LANG en_US.UTF-8  
