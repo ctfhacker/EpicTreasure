@@ -186,11 +186,20 @@ RUN cd /root/tools \
     && cp libheap.py /usr/lib/python3.4 \
     && echo "python from libheap import *" >> /root/.gdbinit
 
+# Install QIRA
+RUN cd /root/tools \
+    && git clone https://github.com/BinaryAnalysisPlatform/qira.git \
+    && cd qira/ \ 
+    && ./install.sh
+
+# Install decompile
+COPY decompile /usr/bin/decompile
+RUN chmod +x /usr/bin/decompile
+
 RUN apt-get install silversearcher-ag
+RUN apt-get install unzip
 
 RUN locale-gen en_US.UTF-8  
 ENV LANG en_US.UTF-8  
 ENV LANGUAGE en_US:en  
 ENV LC_ALL en_US.UTF-8     
-
-# RUN chown -R epictreasure.epictreasure /root

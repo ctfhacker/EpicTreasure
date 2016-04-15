@@ -1,0 +1,530 @@
+#!/usr/bin/env python
+#
+# A client application for decompiling files by using the retdec.com public
+# REST API (https://retdec.com/api/).
+#
+# Due to the use of the standard argparse module, this script requires at least
+# Python 2.7 or 3.2. Tested under Python 2.7 and 3.4.
+#
+# Copyright (c) 2015 AVG Technologies.
+#
+# Distributed under the MIT license:
+#
+#     Permission is hereby granted, free of charge, to any person obtaining a
+#     copy of this software and associated documentation files (the
+#     "Software"), to deal in the Software without restriction, including
+#     without limitation the rights to use, copy, modify, merge, publish,
+#     distribute, sublicense, and/or sell copies of the Software, and to permit
+#     persons to whom the Software is furnished to do so, subject to the
+#     following conditions:
+#
+#     The above copyright notice and this permission notice shall be included
+#     in all copies or substantial portions of the Software.
+#
+#     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+#     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+#     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+#     NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+#     DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+#     OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+#     USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+# Changelog:
+#
+#     2015-02-04:
+#         - Initial version.
+#
+
+import argparse
+import os
+import re
+import shutil
+import sys
+import time
+
+# https://pypi.python.org/pypi/requests
+import requests
+
+
+class DecompilationError(Exception):
+    """An exception raised when there is a non-built-in error during script
+    execution.
+    """
+
+
+class ProgressDisplayer:
+    """A base class for all displayers of progress."""
+
+    def __init__(self, file):
+        """Initializes the displayer with the given file to be decompiled."""
+        self.file = file
+
+    def display_decompilation_progress(self, status):
+        """Displays the decompilation progress based on the given status."""
+        raise NotImplementedError
+
+    def display_download_progress(self, file_name):
+        """Displays the download progress by showing that the given output file
+        is being downloaded.
+        """
+        raise NotImplementedError
+
+    def print_error(self, error):
+        """Prints the given decompilation error to the standard output."""
+        sys.stdout.write('error: {}\n'.format(error))
+
+
+class ProgressBarDisplayer(ProgressDisplayer):
+    """Displays a progress bar during the decompilation."""
+
+    BAR_LENGTH = 40
+    BAR_FILL_CHAR = '#'
+    BAR_EMPTY_CHAR = ' '
+
+    def display_decompilation_progress(self, status):
+        # Example:
+        #
+        #     test.exe (ID: 8DRerEdKop) [##################  ] 85%
+        #
+        completion = status['completion']
+        fill_length = int(self.BAR_LENGTH * (completion / 100))
+
+        # '\r' causes the current line to be rewritten.
+        sys.stdout.write('\r{} (ID: {}) [{}{}] {}% '.format(
+            self.file,
+            status['id'],
+            self.BAR_FILL_CHAR * fill_length,
+            self.BAR_EMPTY_CHAR * (self.BAR_LENGTH - fill_length),
+            completion
+        ))
+
+        if status['finished']:
+            if status['succeeded']:
+                sys.stdout.write('OK')
+            else:
+                sys.stdout.write('FAIL')
+            sys.stdout.write('\n')
+
+        if status['failed']:
+            self.print_error(status['error'])
+
+        # Make the output available as soon as possible.
+        sys.stdout.flush()
+
+    def display_download_progress(self, file_name):
+        # Do not display anything.
+        pass
+
+
+class ProgressLogDisplayer(ProgressDisplayer):
+    """Displays a log during the decompilation."""
+
+    def __init__(self, *args, **kwargs):
+        ProgressDisplayer.__init__(self, *args, **kwargs)
+        self.last_part = None
+        self.last_phase_index = 0
+        self.prologue_printed = False
+        self.first_download = True
+
+    def display_decompilation_progress(self, status):
+        # Example:
+        #
+        #    test.exe, ID: RxOejne5l1
+        #    ========================
+        #
+        #    Waiting for resources...                              [OK]
+        #    Pre-Processing:
+        #        Obtaining file information...                     [OK]
+        #        Converting the file into a unified file format... [OK]
+        #    Front-End:
+        #        Initializing...                                   [OK]
+        #        Creating instruction decoders...                  [OK]
+        #        Detecting statically linked code...               [OK]
+        #        Instruction decoding...                           [OK]
+        #        Control-flow analysis...                          [OK]
+        #        Data-flow analysis...                             [OK]
+        #        Type recovery...                                  [OK]
+        #        Generating LLVM IR...                             [OK]
+        #    Middle-End:
+        #        Initializing...                                   [OK]
+        #        Validating the LLVM IR...                         [OK]
+        #        Optimizing the LLVM IR...                         [OK]
+        #    Back-End:
+        #        Initializing...                                   [OK]
+        #        Converting the LLVM IR into BIR...                [OK]
+        #        Optimizing the BIR...                             [OK]
+        #        Validating the BIR...                             [OK]
+        #        Generating the target code...                     [OK]
+        #    Done...
+        #
+
+        self.print_prologue_unless_already_printed(status['id'])
+
+        new_phases = self.get_new_phases(status['phases'])
+        if not new_phases:
+            return
+
+        self.print_phases(new_phases)
+
+        if status['finished']:
+            self.print_decompilation_end(status)
+
+        # Make the output available as soon as possible.
+        sys.stdout.flush()
+
+    def print_prologue_unless_already_printed(self, id):
+        """Prints the prologue unless it has already been printed."""
+        if not self.prologue_printed:
+            self.print_prologue(id)
+            self.prologue_printed = True
+
+    def print_prologue(self, id):
+        """Prints the prologue."""
+        prologue = '{}, ID: {}'.format(self.file, id)
+        sys.stdout.write('{}\n'.format(prologue))
+        sys.stdout.write('{}\n'.format('=' * len(prologue)))
+        sys.stdout.write('\n')
+
+    def get_new_phases(self, phases):
+        """Returns new phases from the given list."""
+        return phases[self.last_phase_index:]
+
+    def print_phases(self, phases):
+        """Prints the given phases."""
+        for phase in phases:
+            # Print status for the last phase (if any).
+            if self.last_phase_index > 0:
+                self.print_end_of_successful_phase()
+            self.print_phase(phase)
+            self.last_part = phase['part']
+            self.last_phase_index += 1
+
+    def print_phase(self, phase):
+        """Prints the given phase."""
+        phase_str = ''
+
+        if phase['part'] is not None:
+            if phase['part'] != self.last_part:
+                # Entering a new part.
+                sys.stdout.write('{}:\n'.format(phase['part']))
+            phase_str += '    '
+
+        phase_str += '{} ({}%)...'.format(phase['description'], phase['completion'])
+
+        # Print the phase in an aligned way so the status can be printed
+        # afterwards.
+        sys.stdout.write('{0:<60} '.format(phase_str))
+
+    def print_decompilation_end(self, status):
+        """Prints the end of the decompilation."""
+        if status['failed']:
+            self.print_end_of_failed_phase()
+            sys.stdout.write('\n')
+            self.print_error(status['error'])
+        else:
+            # Do not print '[OK]' for the last phase ('Done'), just end the
+            # line.
+            sys.stdout.write('\n')
+
+    def print_end_of_successful_phase(self):
+        """Prints the and of a successful phase."""
+        self.print_phase_end('OK')
+
+    def print_end_of_failed_phase(self):
+        """Prints the and of a failed phase."""
+        self.print_phase_end('FAIL')
+
+    def print_phase_end(self, status):
+        """Prints the end of the current phase."""
+        sys.stdout.write('[{}]\n'.format(status))
+
+    def display_download_progress(self, file_name):
+        # Example:
+        #
+        #    Downloading:
+        #     - test.c
+        #     - test.dsm
+        #
+
+        self.print_download_header_unless_already_printed()
+
+        sys.stdout.write(' - {}\n'.format(file_name))
+
+        # Make the output available as soon as possible.
+        sys.stdout.flush()
+
+    def print_download_header_unless_already_printed(self):
+        """Prints the "downloading" header (unless already printed)."""
+        if self.first_download:
+            sys.stdout.write('\nDownloading:\n')
+            self.first_download = False
+
+
+def parse_args(argv):
+    """Parses the given list of arguments."""
+    parser = argparse.ArgumentParser(
+        description='Decompiler of executable files.'
+    )
+    parser.add_argument('file',
+        metavar='FILE',
+        help='file to decompile')
+    parser.add_argument('-a', '--architecture',
+        dest='architecture',
+        choices={'mips', 'pic32', 'arm', 'thumb', 'powerpc', 'x86'},
+        help='architecture (default: automatic detection)')
+    parser.add_argument('-f', '--file-format',
+        dest='file_format',
+        choices={'elf', 'pe'},
+        help='file format (default: automatic detection)')
+    parser.add_argument('-k', '--api-key',
+        dest='api_key',
+        metavar='KEY',
+        help='API key to be used')
+    parser.add_argument('-l', '--target-language',
+        dest='target_language',
+        choices={'c', 'py'},
+        default='c',
+        help='target high-level language (default: c)')
+    parser.add_argument('-m', '--mode',
+        dest='mode',
+        choices={'c', 'bin'},
+        help='decompilation mode (default: automatic detection)')
+    parser.add_argument('-u', '--api-url',
+        dest='api_url',
+        metavar='URL',
+        default='https://retdec.com/service/api',
+        help='URL to the API (default: https://retdec.com/service/api)')
+    parser.add_argument('-v', '--verbose',
+        dest='verbose',
+        action='store_true',
+        default=False,
+        help='be more verbose during the decompilation')
+    parser.add_argument('-w', '--wait-time',
+        dest='wait_time',
+        metavar='TIME',
+        type=float,
+        default=1,
+        help='how many seconds should the script wait between status requests')
+    return parser.parse_args(argv[1:])
+
+
+def create_settings(args):
+    """Creates decompilation settings based on the arguments provided by the
+    user.
+    """
+    settings = {}
+
+    # Mode.
+    if args.mode is not None:
+        settings['mode'] = args.mode
+    else:
+        settings['mode'] = 'c' if args.file.endswith('.c') else 'bin'
+
+    # Architecture.
+    if args.architecture is not None:
+        settings['architecture'] = args.architecture
+
+    # File format.
+    if args.file_format is not None:
+        settings['file_format'] = args.file_format
+
+    # Target high-level language.
+    settings['target_language'] = args.target_language
+
+    return settings
+
+
+def create_session(api_key):
+    """Creates a session for requests."""
+    # By using a session, we can speed up the querying since sessions
+    # automatically use connection pools that utilize keep-alive HTTP
+    # connections. Moreover, they allow to set default arguments to be used,
+    # i.e. we can just set the authentication here so we do not have to pass
+    # the API key around.
+    session = requests.Session()
+    session.auth = (api_key, '')
+    return session
+
+
+def get_arg_or_env(args, arg_name, env_name):
+    """Returns the argument of the given name (if not None) or the value of the
+    given environmental variable.
+    """
+    arg = getattr(args, arg_name, None)
+    if arg is None:
+        arg = os.getenv(env_name)
+    return arg
+
+
+def send_request(session, method, url, **kwargs):
+    """Sends a request of the given method (GET/POST) to the given URL with the
+    given arguments.
+
+    Returns the body of the response. If the response indicates an error,
+    DecompilationError is raised.
+    """
+    requests_method = getattr(session, method.lower())
+    response = requests_method(url, **kwargs)
+    verify_response(response)
+    return response
+
+
+def verify_response(response):
+    """Verifies that the given response is OK.
+
+    Raises DecompilationError where there was an error.
+    """
+    if response.ok:
+        return
+
+    if response.status_code == 401:
+        raise DecompilationError('authentication with the given API key failed')
+
+    if response.status_code == 404:
+        raise DecompilationError(
+            "'{}' was not found (is the provided API URL valid?)".format(
+                response.request.url
+            )
+        )
+
+    response_json = response.json()
+    raise DecompilationError("{} request to '{}' returned '{} {} ({})'".format(
+            response.request.method,
+            response.request.url,
+            response.status_code,
+            response_json['message'],
+            response_json['description']
+        )
+    )
+
+
+def get_links_from_response(response):
+    """Returns links from the given response."""
+    response_json = response.json()
+    return response_json['links']
+
+
+def decompile_file(session, file, settings, api_url, wait_time,
+        progress_displayer):
+    """Decompiles the given file with the given settings, displays progress,
+    and downloads the decompiled output.
+    """
+    status_url, outputs_url = send_decompilation_request(session, file,
+        settings, api_url)
+    decompilation_succeeded = wait_until_decompilation_is_finished(
+        session, status_url, wait_time, progress_displayer)
+    if decompilation_succeeded:
+        download_decompilation_outputs(session, outputs_url,
+            os.path.dirname(file), progress_displayer)
+    sys.exit(0 if decompilation_succeeded else 1)
+
+
+def send_decompilation_request(session, file, settings, api_url):
+    """Sends a new decompilation request and returns the status and outputs
+    URLs.
+    """
+    decompilations_url = api_url.rstrip('/') + '/decompiler/decompilations'
+    with open(file, 'rb') as input_file:
+        files = {'input': (os.path.basename(file), input_file)}
+        response = send_request(session, 'POST', decompilations_url,
+            data=settings, files=files)
+    links = get_links_from_response(response)
+    return links['status'], links['outputs']
+
+
+def wait_until_decompilation_is_finished(session, status_url, wait_time,
+        progress_displayer):
+    """Waits until the decompilation is finished.
+
+    Displays progress during the waiting.
+
+    Returns True if the decompilation succeeded, False otherwise.
+    """
+    while True:
+        response = send_request(session, 'GET', status_url)
+        response_json = response.json()
+        progress_displayer.display_decompilation_progress(response_json)
+        if response_json['finished']:
+            return response_json['succeeded']
+        time.sleep(wait_time)
+
+
+def download_decompilation_outputs(session, outputs_url, outputs_dir,
+        progress_displayer):
+    """Downloads decompilation outputs based on the given URL to the given
+    directory.
+    """
+    # Download only some of the output files, i.e. do not download everything.
+    links = get_links_to_available_outputs(session, outputs_url)
+    # HLL (C or Python')
+    download_file(session, links['hll'], outputs_dir, progress_displayer)
+    # DSM (disassembler)
+    download_file(session, links['dsm'], outputs_dir, progress_displayer)
+
+
+def get_links_to_available_outputs(session, outputs_url):
+    """Obtains links to available outputs from the given URL."""
+    response = send_request(session, 'GET', outputs_url)
+    return get_links_from_response(response)
+
+
+def download_file(session, url, output_dir, progress_displayer):
+    """Downloads the file from the given URL and stores it to the given
+    directory.
+    """
+    response = send_request(session, 'GET', url, stream=True)
+    output_file_name = get_file_name_from_response(response)
+    progress_displayer.display_download_progress(output_file_name)
+    with open(os.path.join(output_dir, output_file_name), 'wb') as output_file:
+        shutil.copyfileobj(response.raw, output_file)
+
+
+def get_file_name_from_response(response):
+    """Returns a file name from the given response."""
+    m = re.search('filename=(\S+)', response.headers['Content-Disposition'])
+    return m.group(1)
+
+
+def main(argc, argv):
+    try:
+        args = parse_args(argv)
+
+        # Allow override of the API key/URL from the environment.
+        api_url = get_arg_or_env(args, 'api_url', 'API_URL')
+        if api_url is None:
+            raise DecompilationError(
+                'no API URL provided (use -u/--api-url or '
+                'the API_URL environmental variable)'
+            )
+        api_key = get_arg_or_env(args, 'api_key', 'API_KEY')
+        try:
+            with open('/root/host-share/decompile-api') as f:
+                data = f.read()
+        except:
+            print("API Key not found. Please register at https://retdec.com and put your API key in host-share/decompile-api on your host")
+            sys.exit(0)
+
+        if api_key is None:
+            raise DecompilationError(
+                'no API key provided (use -k/--api-key or '
+                'the API_KEY environmental variable)'
+            )
+
+        # Create a proper progress displayer.
+        if args.verbose:
+            progress_displayer = ProgressLogDisplayer(args.file)
+        else:
+            progress_displayer = ProgressBarDisplayer(args.file)
+
+        settings = create_settings(args)
+        session = create_session(api_key)
+
+        decompile_file(session, args.file, settings, api_url, args.wait_time,
+            progress_displayer)
+    except DecompilationError as ex:
+        sys.stderr.write('error: {}\n'.format(ex))
+        sys.exit(1)
+
+
+if __name__ == '__main__':
+    main(len(sys.argv), sys.argv)
