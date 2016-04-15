@@ -27,7 +27,7 @@ Check [Virtualbox](https://www.virtualbox.org/wiki/Downloads) for information on
 ### Install Vagrant
 Check [VagrantUp](https://www.vagrantup.com/downloads.html) for information on installing vagrant.
 
-## Fire up the VM
+### Fire up the VM
 ```
 git clone https://github.com/ctfhacker/epictreasure
 cd epictreasure
