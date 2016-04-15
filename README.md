@@ -7,6 +7,10 @@
 * [Firmware tools (fmk / qemu)](http://reverseengineering.stackexchange.com/questions/8829/cross-debugging-for-mips-elf-with-qemu-toolchain)
 * [angr](https://github.com/angr/angr)
 * [ROPGadget](https://github.com/JonathanSalwan/ROPgadget)
+* [decompile](https://retdec.com/) - Add API key to `host-share/decompile-api`
+* [qira](https://qira.me)
+* [binwalk](https://github.com/devttys0/binwalk)
+* [apktool](http://ibotpeaches.github.io/Apktool/)
 
 ## Install VirtualBox
 Check [Virtualbox](https://www.virtualbox.org/wiki/Downloads) for information on installing Virtualbox on your respective operating system.
