@@ -1,4 +1,4 @@
-# EpicTreasure - Batteries included CTF Vagrant box
+# EpicTreasure - Batteries included CTF VM
 
 ## Tools included
 * [Binjitsu](https://github.com/binjitsu/binjitsu)
@@ -12,10 +12,19 @@
 * [binwalk](https://github.com/devttys0/binwalk)
 * [apktool](http://ibotpeaches.github.io/Apktool/)
 
-## Install VirtualBox
+## Docker
+
+```
+docker pull ctfhacker/epictreasure
+docker run -v /path/to/host/share/folder:/root/host-share --privileged -it --workdir=/root ctfhacker/epictreasure
+```
+
+## Vagrant
+
+### Install VirtualBox
 Check [Virtualbox](https://www.virtualbox.org/wiki/Downloads) for information on installing Virtualbox on your respective operating system.
 
-## Install Vagrant
+### Install Vagrant
 Check [VagrantUp](https://www.vagrantup.com/downloads.html) for information on installing vagrant.
 
 ## Fire up the VM
@@ -114,6 +123,14 @@ python
 >>> import angr
 >>>
 ```
+
+### decompile
+
+Run the following commands in the VM:
+```
+decompile binary_name
+```
+
 
 ### Shared folder
 
