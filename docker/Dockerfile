@@ -65,9 +65,13 @@ RUN pip3 install --upgrade pycparser
 
 RUN pip install --upgrade git+https://github.com/binjitsu/binjitsu.git # 2016-2-15
 
-RUN git clone https://github.com/zachriggle/pwndbg /root/tools/pwndbg
-RUN echo "source /root/tools/pwndbg/gdbinit.py" > /root/.gdbinit
-RUN pip3 install -Ur /root/tools/pwndbg/requirements.txt
+RUN git clone https://github.com/zachriggle/pwndbg \
+    && cd pwndbg \
+    && ./setup.sh
+
+# RUN git clone https://github.com/zachriggle/pwndbg /root/tools/pwndbg
+# RUN echo "source /root/tools/pwndbg/gdbinit.py" > /root/.gdbinit
+# RUN pip3 install -Ur /root/tools/pwndbg/requirements.txt
 
 RUN apt-get install -y libglib2.0-dev \ 
     && cd /root/tools \ 
