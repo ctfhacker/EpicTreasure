@@ -13,27 +13,6 @@ sudo apt-get -y install foremost
 sudo apt-get -y install ipython
 sudo apt-get -y install silversearcher-ag
 
-"""
-# QEMU with MIPS/ARM - http://reverseengineering.stackexchange.com/questions/8829/cross-debugging-for-mips-elf-with-qemu-toolchain
-sudo apt-get -y install qemu qemu-user qemu-user-static
-sudo apt-get -y install 'binfmt*'
-sudo apt-get -y install libc6-armhf-armel-cross
-sudo apt-get -y install debian-keyring
-sudo apt-get -y install debian-archive-keyring
-sudo apt-get -y install emdebian-archive-keyring
-tee /etc/apt/sources.list.d/emdebian.list << EOF
-deb http://mirrors.mit.edu/debian squeeze main
-deb http://www.emdebian.org/debian squeeze main
-EOF
-sudo apt-get -y install libc6-mipsel-cross
-sudo apt-get -y install libc6-arm-cross
-mkdir /etc/qemu-binfmt
-ln -s /usr/mipsel-linux-gnu /etc/qemu-binfmt/mipsel 
-ln -s /usr/arm-linux-gnueabihf /etc/qemu-binfmt/arm
-rm /etc/apt/sources.list.d/emdebian.list
-sudo apt-get update
-"""
-
 # Install Binjitsu
 sudo apt-get -y install python2.7 python-pip python-dev git
 sudo pip install --upgrade git+https://github.com/binjitsu/binjitsu.git
@@ -97,11 +76,6 @@ sudo pip2 uninstall capstone -y
 cd ~/tools/capstone/bindings/python
 sudo python setup.py install
 
-# Install Angr
-cd $HOMEDIR
-sudo apt-get -y install python-dev libffi-dev build-essential virtualenvwrapper
-sudo pip install angr --upgrade
-
 # Install american-fuzzy-lop
 sudo apt-get -y install clang llvm
 cd $HOMEDIR/tools
@@ -136,21 +110,6 @@ sudo apt-get update
 sudo apt-get -y install libc6:i386 libncurses5:i386 libstdc++6:i386
 sudo apt-get -y install libc6-dev-i386
 
-# Install apktool - from https://github.com/zardus/ctf-tools
-apt-get update
-apt-get install -y default-jre
-wget https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool
-wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.0.2.jar
-sudo mv apktool_2.0.2.jar /bin/apktool.jar
-sudo mv apktool /bin/
-sudo chmod 755 /bin/apktool
-sudo chmod 755 /bin/apktool.jar
-
-# Install Pillow
-sudo apt-get build-dep python-imaging
-sudo apt-get -y install libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev
-sudo pip install Pillow
-
 # Install r2pipe
 sudo pip install r2pipe
 
@@ -173,3 +132,32 @@ git clone https://github.com/cloudburst/libheap
 cd libheap
 sudo cp libheap.py /usr/lib/python3.4
 echo "python from libheap import *" >> ~/.gdbinit
+
+# Install GO
+cd $HOMEDIR
+wget https://storage.googleapis.com/golang/go1.6.2.linux-amd64.tar.gz
+tar zxvf go1.*
+mkdir $HOMEDIR/.go
+
+# Install crashwalk
+go get -u github.com/arizvisa/crashwalk/cmd/...
+mkdir $HOMEDIR/src
+cd $HOMEDIR/src
+git clone https://github.com/jfoote/exploitable
+
+# Install joern
+sudo apt-get install ant
+wget https://github.com/fabsx00/joern/archive/0.3.1.tar.gz
+tar xfzv 0.3.1.tar.gz
+cd joern-0.3.1
+wget http://mlsec.org/joern/lib/lib.tar.gz
+tar xfzv lib.tar.gz
+ant
+alias joern='java -jar $JOERN/bin/joern.jar'
+
+mkvirtualenv joern
+wget https://github.com/nigelsmall/py2neo/archive/py2neo-2.0.7.tar.gz
+tar zxvf py2neo*
+cd py2neo
+python setup.py install
+
