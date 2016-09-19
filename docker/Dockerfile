@@ -3,7 +3,7 @@
 # Based on Ubuntu
 ############################################################
 
-FROM ubuntu
+FROM ubuntu:16.04
 MAINTAINER Maintainer Cory Duplantis
 
 RUN apt-get update && apt-get install -y software-properties-common # feb 16 2016
@@ -20,6 +20,7 @@ RUN apt-get install -y \
     libc6-dev-i386 \
     libc6-i386 \
     libffi-dev \
+    libssl-dev \
     libncurses5-dev \
     libncursesw5-dev \
     python-dev \
@@ -36,7 +37,8 @@ RUN apt-get install -y \
 # Install radare2
 RUN git clone https://github.com/radare/radare2 \
     && cd radare2 \
-    && ./sys/install.sh
+    && ./sys/install.sh \
+    && make symstall
 
 # Install angr
 RUN pip install angr --upgrade
@@ -50,36 +52,13 @@ RUN pip install --upgrade ipython
 RUN mkdir /root/tools
 
 # Install binjitsu
-RUN apt-get -y install python2.7 python-pip python-dev git \ 
-    && pip install --upgrade git+https://github.com/binjitsu/binjitsu.git
-
-RUN git clone https://github.com/aquynh/capstone \
-	&& cd capstone \
-	&& git checkout -t origin/next \
-	&& sudo ./make.sh install \
-	&& cd bindings/python \
-	&& python2 setup.py install \
-	&& python3 setup.py install
-RUN pip install --upgrade pycparser
-RUN pip3 install --upgrade pycparser
-
-RUN pip install --upgrade git+https://github.com/binjitsu/binjitsu.git # 2016-2-15
+RUN pip install --upgrade pwntools
 
 RUN git clone https://github.com/zachriggle/pwndbg \
     && cd pwndbg \
-    && ./setup.sh
-
-# RUN git clone https://github.com/zachriggle/pwndbg /root/tools/pwndbg
-# RUN echo "source /root/tools/pwndbg/gdbinit.py" > /root/.gdbinit
-# RUN pip3 install -Ur /root/tools/pwndbg/requirements.txt
-
-RUN apt-get install -y libglib2.0-dev \ 
-    && cd /root/tools \ 
-    && git clone https://github.com/unicorn-engine/unicorn \ 
-    && cd unicorn \ 
-    && ./make.sh install \ 
-    && cd bindings/python \ 
-    && python3 setup.py install
+    && sed 's/sudo//g' setup.sh > non_sudo_setup.sh \
+    && chmod +x non_sudo_setup.sh \
+    && ./non_sudo_setup.sh
 
 COPY emdebian.list /etc/apt/sources.list.d/emdebian.list
 RUN apt-get -y install qemu qemu-user qemu-user-static 
@@ -98,7 +77,7 @@ RUN mkdir /etc/qemu-binfmt
 RUN ln -s /usr/mipsel-linux-gnu /etc/qemu-binfmt/mipsel 
 RUN ln -s /usr/arm-linux-gnueabihf /etc/qemu-binfmt/arm
 RUN rm /etc/apt/sources.list.d/emdebian.list
-RUN sudo apt-get update
+RUN apt-get update
 
 # Install binwalk
 RUN cd /root/tools \
@@ -110,7 +89,7 @@ RUN cd /root/tools \
 # Install firmware-mod-kit
 RUN apt-get -y install git build-essential zlib1g-dev liblzma-dev python-magic \ 
     && cd /root/tools \ 
-    && wget https://firmware-mod-kit.googlecode.com/files/fmk_099.tar.gz \ 
+    && wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/firmware-mod-kit/fmk_099.tar.gz \
     && tar zxvf fmk_099.tar.gz \ 
     && rm fmk_099.tar.gz \
     && cd fmk/src \
@@ -118,12 +97,12 @@ RUN apt-get -y install git build-essential zlib1g-dev liblzma-dev python-magic \
     && make
 
 # Install AFL with QEMU and clang-fast
-RUN apt-get -y install clang llvm
+RUN apt-get -y install clang llvm libtool-bin
 RUN cd /root/tools \
     && wget --quiet http://lcamtuf.coredump.cx/afl/releases/afl-latest.tgz \
     && tar -xzvf afl-latest.tgz \
     && rm afl-latest.tgz \
-    && wget --quiet http://llvm.org/releases/3.8.0/clang+llvm-3.8.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz \
+    && wget --quiet http://llvm.org/releases/3.8.0/clang+llvm-3.8.0-x86_64-linux-gnu-ubuntu-16.04.tar.xz \
     && xz -d clang* \
     && tar xvf clang* \
     && cd clang* \
@@ -135,10 +114,12 @@ RUN cd /root/tools \
     && cd llvm_mode \
     && make \
     && cd .. \
-    && sudo make install \
-    && sudo apt-get -y install libtool automake bison libglib2.0-dev \
+    && apt-get -y install libtool automake bison libglib2.0-dev \
     && cd qemu* \ 
-    && ./build_qemu_support.sh
+    && ./build_qemu_support.sh \
+    && cd .. \
+    && make install
+
 
 RUN apt-get -y install cmake
 
@@ -151,10 +132,10 @@ RUN apt-get update \
     && apt-get install -y default-jre \
     && wget https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool \
     && wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.0.2.jar \
-    && sudo mv apktool_2.0.2.jar /bin/apktool.jar \
-    && sudo mv apktool /bin/ \
-    && sudo chmod 755 /bin/apktool \
-    && sudo chmod 755 /bin/apktool.jar
+    && mv apktool_2.0.2.jar /bin/apktool.jar \
+    && mv apktool /bin/ \
+    && chmod 755 /bin/apktool \
+    && chmod 755 /bin/apktool.jar
 
 # Install Pillow
 RUN apt-get -y build-dep python-imaging \
@@ -185,16 +166,11 @@ RUN cd /root/tools \
 
 # Install libheap in GDB
 RUN cd /root/tools \
+    && apt-get install libc6-dbg \
     && git clone https://github.com/cloudburst/libheap \
     && cd libheap \
-    && cp libheap.py /usr/lib/python3.4 \
+    && python setup.py install \
     && echo "python from libheap import *" >> /root/.gdbinit
-
-# Install QIRA
-RUN cd /root/tools \
-    && git clone https://github.com/BinaryAnalysisPlatform/qira.git \
-    && cd qira/ \ 
-    && ./install.sh
 
 # Install decompile
 COPY decompile /usr/bin/decompile
