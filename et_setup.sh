@@ -12,39 +12,32 @@ sudo apt-get -y install unzip
 sudo apt-get -y install foremost
 sudo apt-get -y install ipython
 sudo apt-get -y install silversearcher-ag
+sudo apt-get -y install python2.7 python-pip python-dev git libssl-dev libffi-dev
 
-# Install Binjitsu
-sudo apt-get -y install python2.7 python-pip python-dev git
-sudo pip install --upgrade git+https://github.com/binjitsu/binjitsu.git
+# Ptrace enable
 echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
 
+
+# Install virtualenvwrapper
+pip install virtualenvwrapper
+export WORKON_HOME=$HOME/.virtualenvs
+export PROJECT_HOME=$HOME/Devel
+source /usr/local/bin/virtualenvwrapper.sh
+
+# Switch to tools dir for installation
 cd $HOMEDIR
 mkdir tools
 cd tools
 
 # Install pwndbg
-git clone https://github.com/zachriggle/pwndbg
-echo source `pwd`/pwndbg/gdbinit.py >> ~/.gdbinit
+mkvirtualenv pwn
+pip install --upgrade pwntools
+deactivate
 
-# Capstone for pwndbg
-git clone https://github.com/aquynh/capstone
-cd capstone
-git checkout -t origin/next
-sudo ./make.sh install
-cd bindings/python
-sudo python3 setup.py install # Ubuntu 14.04+, GDB uses Python3
-
-# Unicorn for pwndbg
-cd $HOMEDIR/tools
-sudo apt-get install libglib2.0-dev
-git clone https://github.com/unicorn-engine/unicorn
-cd unicorn
-sudo ./make.sh install
-cd bindings/python
-sudo python3 setup.py install # Ubuntu 14.04+, GDB uses Python3
-
-# pycparser for pwndbg
-sudo pip3 install pycparser # Use pip3 for Python3
+# Install pwndbg
+git clone https://github.com/pwndbg/pwndbg
+cd pwndbg
+./setup.sh
 
 # Install radare2
 cd ~
@@ -68,13 +61,6 @@ rm fmk_099.tar.gz
 cd fmk_099/src
 ./configure
 make
-
-# Uninstall capstone
-sudo pip2 uninstall capstone -y
-
-# Install correct capstone
-cd ~/tools/capstone/bindings/python
-sudo python setup.py install
 
 # Install american-fuzzy-lop
 sudo apt-get -y install clang llvm
@@ -111,27 +97,12 @@ sudo apt-get -y install libc6:i386 libncurses5:i386 libstdc++6:i386
 sudo apt-get -y install libc6-dev-i386
 
 # Install r2pipe
-sudo pip install r2pipe
+pip install r2pipe
 
 # Install ROPGadget
 git clone https://github.com/JonathanSalwan/ROPgadget
 cd ROPgadget
 sudo python setup.py install
-
-# Personal config
-sudo sudo apt-get -y install stow
-cd $HOMEDIR
-rm .bashrc
-git clone https://github.com/ctfhacker/dotfiles
-cd dotfiles
-./install.sh
-
-# Install libheap in GDB
-cd $HOMEDIR/tools
-git clone https://github.com/cloudburst/libheap
-cd libheap
-sudo cp libheap.py /usr/lib/python3.4
-echo "python from libheap import *" >> ~/.gdbinit
 
 # Install GO
 cd $HOMEDIR
@@ -144,6 +115,9 @@ go get -u github.com/arizvisa/crashwalk/cmd/...
 mkdir $HOMEDIR/src
 cd $HOMEDIR/src
 git clone https://github.com/jfoote/exploitable
+
+# Install Delve - go debugging
+go get github.com/derekparker/delve/cmd/dlv
 
 # Install joern
 sudo apt-get install ant
@@ -160,4 +134,13 @@ wget https://github.com/nigelsmall/py2neo/archive/py2neo-2.0.7.tar.gz
 tar zxvf py2neo*
 cd py2neo
 python setup.py install
+
+# Personal config
+sudo sudo apt-get -y install stow
+cd $HOMEDIR
+rm .bashrc
+git clone --recursive https://github.com/ctfhacker/dotfiles
+cd dotfiles
+./install.sh
+
 
