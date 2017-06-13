@@ -129,6 +129,7 @@ RUN apt-get update && apt-get install -y software-properties-common && \
     tar zxvf DrMem* && \
     rm DrMemory-Linux-1.11.0-2.tar.gz 
 
+RUN locale-gen en_US.UTF-8  
 ENV LANG en_US.UTF-8  
 ENV LANGUAGE en_US:en  
 ENV LC_ALL en_US.UTF-8     
