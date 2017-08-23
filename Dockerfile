@@ -8,8 +8,7 @@ MAINTAINER Maintainer Cory Duplantis
 
 RUN mkdir /root/tools
 RUN apt-get update && apt-get install -y software-properties-common && \
-    apt-get update && \
-    apt-get install -y build-essential curl gdb \
+    apt-get update && \ apt-get install -y build-essential curl gdb \
     gdb-multiarch gdbserver git \
     libc6-arm64-cross libc6-armhf-cross libc6-dev-i386 \
     libc6-i386 libffi-dev libssl-dev libncurses5-dev \
@@ -127,7 +126,31 @@ RUN apt-get update && apt-get install -y software-properties-common && \
     rm DynamoRIO-Linux-7.0.0-RC1.tar.gz && \
     wget https://github.com/DynamoRIO/drmemory/releases/download/release_1.11.0/DrMemory-Linux-1.11.0-2.tar.gz && \
     tar zxvf DrMem* && \
-    rm DrMemory-Linux-1.11.0-2.tar.gz 
+    rm DrMemory-Linux-1.11.0-2.tar.gz  && \
+
+    apt-get -y install clang llvm libtool-bin && \
+
+    cd /root/tools \
+    && wget --quiet http://lcamtuf.coredump.cx/afl/releases/afl-latest.tgz \
+    && tar -xzvf afl-latest.tgz \
+    && rm afl-latest.tgz \
+    && wget --quiet http://llvm.org/releases/3.8.0/clang+llvm-3.8.0-x86_64-linux-gnu-ubuntu-16.04.tar.xz \
+    && xz -d clang* \
+    && tar xvf clang* \
+    && cd clang* \
+    && cd bin \
+    && export PATH=$PWD:$PATH \
+    && cd ../.. \
+    && cd afl-* \
+    && make \
+    && cd llvm_mode \
+    && make \
+    && cd .. \
+    && apt-get -y install libtool automake bison libglib2.0-dev \
+    && cd qemu* \ 
+    && ./build_qemu_support.sh \
+    && cd .. \
+    && make install
 
 RUN locale-gen en_US.UTF-8  
 ENV LANG en_US.UTF-8  

@@ -72,6 +72,7 @@ RUN apt-get -y install libc6-mipsel-cross
 RUN apt-get -y install libc6-armel-cross libc6-dev-armel-cross
 RUN apt-get -y install libc6-armhf-cross libc6-dev-armhf-cross
 RUN apt-get -y install binutils-arm-linux-gnueabi
+RUN apt-get -y install gcc-arm-linux-gnueabi
 RUN apt-get -y install libncurses5-dev
 RUN mkdir /etc/qemu-binfmt
 RUN ln -s /usr/mipsel-linux-gnu /etc/qemu-binfmt/mipsel 
