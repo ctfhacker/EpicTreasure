@@ -84,6 +84,7 @@ RUN apt-get update
 RUN cd /root/tools \
     && git clone https://github.com/devttys0/binwalk \
     && cd binwalk \ 
+    && ./deps.sh \
     && python setup.py install \ 
     && apt-get -y install squashfs-tools
 
