@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HOMEDIR=/home/vagrant
+HOMEDIR=/home/$USER
 
 # Updates
 sudo apt-get -y update
@@ -11,17 +11,16 @@ sudo apt-get -y install gdb gdb-multiarch
 sudo apt-get -y install unzip
 sudo apt-get -y install foremost
 sudo apt-get -y install ipython
-sudo apt-get -y install silversearcher-ag
 sudo apt-get -y install python2.7 python-pip python-dev git libssl-dev libffi-dev
+sudo apt-get -y install vim curl
 
 # Ptrace enable
 echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
 
-
 # Install virtualenvwrapper
 pip install virtualenvwrapper
-export WORKON_HOME=$HOME/.virtualenvs
-export PROJECT_HOME=$HOME/Devel
+export WORKON_HOME=$HOMEDIR/.virtualenvs
+export PROJECT_HOME=$HOMEDIR/Devel
 source /usr/local/bin/virtualenvwrapper.sh
 
 # Switch to tools dir for installation
@@ -134,6 +133,10 @@ wget https://github.com/nigelsmall/py2neo/archive/py2neo-2.0.7.tar.gz
 tar zxvf py2neo*
 cd py2neo
 python setup.py install
+
+# Install Rust
+curl https://sh.rustup.rs -sSf | sh
+cargo install ripgrep
 
 # Personal config
 sudo sudo apt-get -y install stow
