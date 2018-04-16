@@ -1,7 +1,7 @@
 # EpicTreasure - Batteries included CTF VM
 
 ## Tools included
-* [Binjitsu](https://github.com/binjitsu/binjitsu)
+* [Pwntools](https://github.com/gallopsled/pwntools)
 * [Pwndbg](https://github.com/zachriggle/pwndbg)
 * [Radare2](https://github.com/radare/radare2)
 * [Firmware tools (fmk / qemu)](http://reverseengineering.stackexchange.com/questions/8829/cross-debugging-for-mips-elf-with-qemu-toolchain)
