@@ -19,24 +19,6 @@ docker pull ctfhacker/epictreasure
 docker run -v /path/to/host/share/folder:/root/host-share --privileged -it --workdir=/root ctfhacker/epictreasure
 ```
 
-## Vagrant
-
-### Install VirtualBox
-Check [Virtualbox](https://www.virtualbox.org/wiki/Downloads) for information on installing Virtualbox on your respective operating system.
-
-### Install Vagrant
-Check [VagrantUp](https://www.vagrantup.com/downloads.html) for information on installing vagrant.
-
-### Fire up the VM
-```
-git clone https://github.com/ctfhacker/epictreasure
-cd epictreasure
-mkdir host-share
-vagrant up
-... Go grab a coffee while we install all the things
-vagrant ssh
-```
-
 ## Default settings
 By default, [my dotfiles](http://github.com/ctfhacker/dotfiles) are installed onto the VM. Simply comment out the following lines in et_setup.sh if you don't want my settings.
 
@@ -96,7 +78,7 @@ Expected output:
 [0x00404890]> aaa
 ```
 
-### Binjitsu
+### Pwntools
 
 Run the following command in the VM:
 ```
@@ -135,3 +117,9 @@ decompile binary_name
 ### Shared folder
 
 Drop files in the `host-share` folder on your host to find them on your VM at `/home/vagrant/host-share`
+
+### Tests
+
+```
+./container-structure-test-darwin-amd64 test --image ctfhacker/epictreasure --config tests.yaml
+```

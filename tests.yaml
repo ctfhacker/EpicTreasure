@@ -1,0 +1,10 @@
+schemaVersion: '2.0.0'
+commandTests:
+- name: "Pwntools"
+  command: "python"
+  args: ["-c", "from pwn import *"]
+  exitCode: 1
+- name: "Radare2"
+  command: "rasm2"
+  args: ["xor eax, eax"]
+  expectedOutput: ["31c0"]
