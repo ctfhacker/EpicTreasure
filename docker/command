@@ -1,3 +1,0 @@
-docker build -t et .
-
-docker run --rm --interactive --tty --workdir=/home/epictreasure --user=epictreasure et
