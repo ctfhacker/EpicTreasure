@@ -131,11 +131,12 @@ alias joern='java -jar $JOERN/bin/joern.jar'
 mkvirtualenv joern
 wget https://github.com/nigelsmall/py2neo/archive/py2neo-2.0.7.tar.gz
 tar zxvf py2neo*
-cd py2neo
-python setup.py install
+cd py2neo-py2neo-2.0.7
+sudo python setup.py install
 
 # Install Rust
-curl https://sh.rustup.rs -sSf | sh
+curl -f -L https://static.rust-lang.org/rustup.sh -O
+sudo sh rustup.sh
 cargo install ripgrep
 
 # Personal config
