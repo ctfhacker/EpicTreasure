@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y software-proper
     wget vim unzip python-imaging \
     libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev \
     squashfs-tools zlib1g-dev liblzma-dev python-magic cmake z3 python-lzma net-tools strace ltrace \
-    gcc-multilib g++-multilib ruby-full
+    gcc-multilib g++-multilib ruby-full binutils-mips-linux-gnu
 RUN locale-gen en_US.UTF-8 && \
     cd /root && \
     rm .bashrc && \
@@ -31,7 +31,7 @@ RUN locale-gen en_US.UTF-8 && \
     cd radare2 && \
     ./sys/install.sh && \
     make install && \
-    pip2 install --upgrade pwntools && \
+    pip2 install git+https://github.com/Gallopsled/pwntools && \
     cd /root/tools && \
     git clone https://github.com/zachriggle/pwndbg && \
     cd pwndbg && \
@@ -112,7 +112,7 @@ RUN apt-get --no-install-recommends -y install qemu qemu-user qemu-user-static &
     cd /root/tools && \
     wget https://github.com/DynamoRIO/dynamorio/releases/download/cronbuild-7.0.17744/DynamoRIO-x86_64-Linux-7.0.17744-0.tar.gz && \
     tar xvf DynamoRIO* && \
-    rm DynamoRIO*tar.gz
+    rm DynamoRIO*tar.gz 
 
 COPY .tmux.conf /root/.tmux.conf
 ENV LANG en_US.UTF-8  
