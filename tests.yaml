@@ -8,3 +8,23 @@ commandTests:
   command: "rasm2"
   args: ["xor eax, eax"]
   expectedOutput: ["31c0"]
+- name: "Binwalk"
+  command: "binwalk"
+  args: []
+  expectedError: ["Extraction Options:"]
+  exitCode: 1
+- name: "Apktool"
+  command: "apktool"
+  args: []
+  expectedOutput: [".*a tool for reengineering Android apk files.*"]
+- name: "Frida"
+  command: "frida-ps"
+  expectedOutput: [".*python3.*"]
+- name: "ROPgadget"
+  command: "ROPgadget"
+  expectedOutput: ["Need a binary filename"]
+  exitCode: 255
+- name: "Pillow"
+  command: "python"
+  args: ["-c", "import PIL"]
+  expectedOutput: []
