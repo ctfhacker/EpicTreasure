@@ -28,3 +28,76 @@ commandTests:
   command: "python"
   args: ["-c", "import PIL"]
   expectedOutput: []
+- name: "Strace"
+  command: "strace"
+  expectedError: ["Try 'strace -h'"]
+  exitCode: 1
+- name: "Ltrace"
+  command: "ltrace"
+  expectedError: ["too few arguments"]
+  exitCode: 1
+- name: "r2pipe"
+  command: "python3"
+  args: ["-c", "import r2pipe"]
+- name: "QEMU ARM"
+  command: "qemu-arm"
+  args: ["--help"]
+  expectedOutput: ["usage: qemu-arm"]
+- name: "QEMU MIPS"
+  command: "qemu-mips"
+  args: ["--help"]
+  expectedOutput: ["usage: qemu-mips"]
+- name: "Ripgrep"
+  command: "rg"
+  args: ["--version"]
+  expectedOutput: ["ripgrep"]
+- name: "Cargo"
+  command: "/root/.cargo/bin/cargo"
+  args: ["--help"]
+  expectedOutput: ["See 'cargo help "]
+- name: "Rustup"
+  command: "/root/.cargo/bin/rustup"
+  args: ["--help"]
+  expectedOutput: ["The Rust toolchain installer"]
+- name: "one_gadget"
+  command: "one_gadget"
+  args: ["--help"]
+  expectedOutput: ["Usage: one_gadget "]
+- name: "arm_now"
+  command: "arm_now"
+  args: ["--help"]
+  expectedOutput: ["arm_now list "]
+- name: "drmemory"
+  command: "drmemory-64"
+  args: ["--help"]
+  expectedError: ["Usage: drmemory "]
+- name: "dynamorio"
+  command: "/root/tools/DynamoRIO-x86_64-Linux-7.0.17744-0/bin64/drrun"
+  args: ["-c", "/root/tools/DynamoRIO-x86_64-Linux-7.0.17744-0/samples/bin64/libinscount.so", "--", "/bin/ls"]
+  expectedOutput: ["instructions executed"]
+- name: "bash"
+  command: "bash"
+  args: ["--version"]
+  expectedOutput: ["4.4"]
+- name: "capstone"
+  command: "python"
+  args: ["-c", "import capstone"]
+  exitCode: 0
+- name: "keystone"
+  command: "python"
+  args: ["-c", "import keystone"]
+  exitCode: 0
+- name: "unicorn"
+  command: "python"
+  args: ["-c", "import unicorn"]
+  exitCode: 0
+- name: "net-tools"
+  command: "netstat"
+  expectedOutput: ["Active Internet connections"]
+- name: "Angr"
+  command: "python"
+  args: ["-c", "import angr"]
+- name: "Valgrind"
+  command: "valgrind"
+  args: ["--version"]
+  expectedOutput: ["valgrind-"]
