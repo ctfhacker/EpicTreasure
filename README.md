@@ -7,8 +7,6 @@
 * [Firmware tools (fmk / qemu)](http://reverseengineering.stackexchange.com/questions/8829/cross-debugging-for-mips-elf-with-qemu-toolchain)
 * [angr](https://github.com/angr/angr)
 * [ROPGadget](https://github.com/JonathanSalwan/ROPgadget)
-* [decompile](https://retdec.com/) - Add API key to `host-share/decompile-api`
-* [qira](https://qira.me)
 * [binwalk](https://github.com/devttys0/binwalk)
 * [apktool](http://ibotpeaches.github.io/Apktool/)
 
@@ -16,7 +14,7 @@
 
 ```
 docker pull ctfhacker/epictreasure
-docker run -v /path/to/host/share/folder:/root/host-share --privileged -it --workdir=/root ctfhacker/epictreasure
+docker run --rm -v /path/to/host/share/folder:/root/host-share --privileged -it --workdir=/root ctfhacker/epictreasure
 ```
 
 ## Default settings
@@ -100,25 +98,29 @@ python
 
 Run the following commands in the VM:
 ```
-source ~/angr/bin/activate
 python
 >>> import angr
 >>>
 ```
 
-### decompile
+### capstone / keystone / unicorn
 
 Run the following commands in the VM:
 ```
-decompile binary_name
+python
+>>> import capstone
+>>> import keystone
+>>> import unicorn
+>>>
 ```
-
 
 ### Shared folder
 
 Drop files in the `host-share` folder on your host to find them on your VM at `/home/vagrant/host-share`
 
 ### Tests
+
+Using Google's [container-structure-test](https://github.com/GoogleContainerTools/container-structure-test) to test our new container
 
 ```
 ./container-structure-test-darwin-amd64 test --image ctfhacker/epictreasure --config tests.yaml
