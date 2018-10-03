@@ -18,16 +18,21 @@ docker run --rm -v /path/to/host/share/folder:/root/host-share --privileged -it 
 ```
 
 ## Default settings
-By default, [my dotfiles](http://github.com/ctfhacker/dotfiles) are installed onto the VM. Simply comment out the following lines in et_setup.sh if you don't want my settings.
+By default, [my dotfiles](http://github.com/ctfhacker/dotfiles) are installed onto the VM. Simply comment out the following lines in `Dockerfile` if you don't want my settings.
 
 ```
-# Personal config
-sudo sudo apt-get -y install stow
-cd /home/vagrant
-rm .bashrc
-git clone https://github.com/thebarbershopper/dotfiles
-cd dotfiles
-./install.sh
+# Personal dotfiles
+RUN cd /root && \
+    rm .bashrc && \
+    git clone --recursive https://github.com/ctfhacker/dotfiles.git && \
+    cd dotfiles && \
+    ./install.sh
+```
+
+Then rebuild the Docker
+
+```
+docker build -t et .
 ```
 
 #### Terminal
@@ -58,10 +63,9 @@ gdb /bin/ls
 
 Expected output:
 ```
-Loaded 53 commands.  Type pwndbg for a list.
 Reading symbols from host-share/crackme...(no debugging symbols found)...done.
 Only available when running
-pwn>
+pwndbg>
 ```
 
 ### Radare
