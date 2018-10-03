@@ -1,3 +1,3 @@
 sut:
     build: .
-    command: docker build --rm -t et-test . && ./container-structure-test-darwin-amd64 test --image et-test --config tests.yaml
+    command: ./container-structure-test-darwin-amd64 test --image ctfhacker/epictreasure --config ./tests.yaml
