@@ -51,7 +51,8 @@ RUN git clone https://github.com/radare/radare2 && \
     cd radare2 && \
     ./sys/install.sh && \
     make install && \
-    pip install r2pipe
+    pip2 install r2pipe && \
+    pip3 install r2pipe
 
 # Install pwntools and pwndbg
 RUN pip2 install git+https://github.com/Gallopsled/pwntools && \

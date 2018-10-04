@@ -1,3 +1,9 @@
 sut:
-    build: .
-    command: ./container-structure-test-darwin-amd64 test --image ctfhacker/epictreasure --config ./tests.yaml
+   build: .
+   dockerfile: Dockerfile.test
+   links:
+     - et
+ et:
+   build: .
+   dockerfile: Dockerfile
+
