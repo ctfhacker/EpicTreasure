@@ -4,8 +4,8 @@
 ############################################################
 
 FROM ubuntu:16.04
+ENV test false
 MAINTAINER Maintainer Cory Duplantis
-
 
 RUN apt update && \
     apt -y install locales
@@ -198,4 +198,5 @@ Run apt update && \
 RUN python2 -m pip install angr
 
 COPY .tmux.conf /root/.tmux.conf
-CMD ["/bin/bash"]
+COPY test.sh /root/test.sh
+CMD sh -c 'if [ "$test" = true ]; then echo "Running tests"; chmod +x /root/test.sh; /root/test.sh; else /bin/bash; fi'

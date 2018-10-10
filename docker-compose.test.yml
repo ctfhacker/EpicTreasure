@@ -1,8 +1,5 @@
 sut:
     build: .
-    dockerfile: Dockerfile.test
-    links:
-    - et
-et:
-    build: .
+    environment:
+        test: "true"
     dockerfile: Dockerfile
