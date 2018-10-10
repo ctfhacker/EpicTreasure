@@ -107,6 +107,10 @@ if !(valgrind --version 2>&1 | rg "valgrind-" 2>&1 >/dev/null); then
     echo valgrind
    bad=1
 fi
+if !(python -V 2>&1 | rg "2." 2>&1 >/dev/null); then
+    echo python -V not 2.x
+   bad=1
+fi
 if [ $bad -eq 1 ]; then
 	exit 1
 fi
