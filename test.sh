@@ -1,5 +1,5 @@
 bad=0
-if !(python -c "from pwn import *" 2>&1); then
+if (python -c "from pwn import *" 2>&1); then
     echo pwntool
    bad=1
 fi

@@ -198,3 +198,4 @@ Run apt update && \
 RUN python2 -m pip install angr
 
 COPY .tmux.conf /root/.tmux.conf
+CMD ["/bin/bash"]
