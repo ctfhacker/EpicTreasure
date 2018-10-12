@@ -111,6 +111,10 @@ if !(python -V 2>&1 | rg "2." 2>&1 >/dev/null); then
     echo python -V not 2.x
    bad=1
 fi
+if !(gdb --version 2>&1 | rg "GNU gdb (GDB) 8.0" 2>&1 >/dev/null); then
+    echo gdb not 8.0
+   bad=1
+fi
 if [ $bad -eq 1 ]; then
 	exit 1
 fi
