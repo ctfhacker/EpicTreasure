@@ -31,7 +31,7 @@ RUN apt update && \
     libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev \
     squashfs-tools zlib1g-dev liblzma-dev python-magic cmake \
     z3 python-lzma net-tools strace ltrace \
-    gcc-multilib g++-multilib ruby-full binutils-mips-linux-gnu
+    gcc-multilib g++-multilib ruby-full binutils-mips-linux-gnu sudo
 
 # Personal dotfiles
 RUN cd /root && \
@@ -57,11 +57,9 @@ RUN git clone https://github.com/radare/radare2 && \
 # Install pwntools and pwndbg
 RUN pip2 install git+https://github.com/Gallopsled/pwntools && \
     cd /root/tools && \
-    git clone https://github.com/zachriggle/pwndbg && \
+    git clone https://github.com/pwndbg/pwndbg && \
     cd pwndbg && \
-    sed 's/sudo//g' setup.sh > non_sudo_setup.sh && \
-    chmod +x non_sudo_setup.sh && \
-    ./non_sudo_setup.sh
+    ./setup.sh
 
 # Install binwalk
 RUN cd /root/tools && \
@@ -192,6 +190,19 @@ RUN cd /root/tools && \
 # Install Valgrind
 Run apt update && \
     apt install valgrind && \
+    apt clean
+
+# Install gdb 8.0
+Run apt update && \
+    apt install -y texinfo && \
+    cd /root/tools && \
+    wget https://ftp.gnu.org/gnu/gdb/gdb-8.0.tar.xz && \
+    xz -d < gdb-8.0.tar.xz > gdb-8.0.tar && \
+    tar xvf gdb-8.0.tar && \
+    cd gdb-8.0 && \
+    ./configure && \
+    make -j4 && \
+    make install && \
     apt clean
 
 # Install angr
