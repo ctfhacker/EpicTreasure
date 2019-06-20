@@ -23,7 +23,7 @@ if !(ROPgadget  2>&1 | rg "Need a binary filename" 2>&1 >/dev/null); then
     echo ropgadget
    bad=1
 fi
-if !(python -c "import PIL" 2>&1); then
+if !(python3 -c "import PIL" 2>&1); then
     echo pillow
    bad=1
 fi
@@ -75,31 +75,43 @@ if !(drmemory-64 --help 2>&1 | rg "Usage: drmemory " 2>&1 >/dev/null); then
     echo drmemory
    bad=1
 fi
-if !(/root/tools/DynamoRIO-x86_64-Linux-7.0.17744-0/bin64/drrun -c /root/tools/DynamoRIO-x86_64-Linux-7.0.17744-0/samples/bin64/libinscount.so -- /bin/ls 2>&1 | rg "instructions executed" 2>&1 >/dev/null); then
-    echo dynamorio
+if !(/root/tools/DynamoRIO-x86_64-Linux-7.91.18058-0/bin64/drrun -c /root/tools/DynamoRIO-x86_64-Linux-7.91.18058-0/samples/bin64/libinscount.so -- /bin/ls 2>&1 | rg "instructions executed" 2>&1 >/dev/null); then
+    echo dynamorio64
    bad=1
 fi
-if !(bash --version 2>&1 | rg "4.4" 2>&1 >/dev/null); then
+if !(bash --version 2>&1 | rg "(4.4|5.0)" 2>&1 >/dev/null); then
     echo bash 4.4
    bad=1
 fi
 if !(python -c "import capstone" 2>&1); then
-    echo capstone
+    echo capstone python2
    bad=1
 fi
 if !(python -c "import keystone" 2>&1); then
-    echo keystone
+    echo keystone python2
    bad=1
 fi
 if !(python -c "import unicorn" 2>&1); then
-    echo unicorn
+    echo unicorn python2
+   bad=1
+fi
+if !(python3 -c "import capstone" 2>&1); then
+    echo capstone python2
+   bad=1
+fi
+if !(python3 -c "import keystone" 2>&1); then
+    echo keystone python2
+   bad=1
+fi
+if !(python3 -c "import unicorn" 2>&1); then
+    echo unicorn python2
    bad=1
 fi
 if !(netstat  2>&1 | rg "Active Internet connections" 2>&1 >/dev/null); then
     echo net-tools
    bad=1
 fi
-if !(python -c "import angr" 2>&1); then
+if !(python3 -c "import angr" 2>&1); then
     echo angr
    bad=1
 fi
