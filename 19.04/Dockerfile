@@ -226,6 +226,10 @@ RUN wget -O ~/.gdbinit-gef-extras.sh -q https://github.com/hugsy/gef/raw/master/
     chmod +x ~/.gdbinit-gef-extras.sh && \
     ~/.gdbinit-gef-extras.sh
 
+# Install go
+RUN wget https://dl.google.com/go/go1.12.6.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go*tar.gz 
+
 COPY .tmux.conf /root/.tmux.conf
 COPY test.sh /root/test.sh
 CMD sh -c 'if [ "$test" = true ]; then echo "Running tests"; chmod +x /root/test.sh; /root/test.sh; else /bin/bash; fi'
